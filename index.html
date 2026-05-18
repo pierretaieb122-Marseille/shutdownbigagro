@@ -54,9 +54,12 @@
   .signataires-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #444; letter-spacing: 0.05em; margin-bottom: 12px; }
   .signataire-list { display: flex; flex-wrap: wrap; gap: 8px; }
   .signataire-pill { background: #111; border: 1px solid #1e1e1e; padding: 5px 12px; border-radius: 2px; font-size: 12px; color: #555; }
+  .mobile-form { display: none; margin-bottom: 32px; position: static; }
   @media (max-width: 768px) {
     .container { grid-template-columns: 1fr; padding: 24px 16px; gap: 32px; }
-    .form-panel { position: static; padding: 24px 18px; order: -1; }
+    .form-panel { position: static; padding: 24px 18px; }
+    .mobile-form { display: block; }
+    .desktop-form { display: none; }
     h1 { font-size: clamp(52px, 16vw, 80px); }
     .subtitle { font-size: 15px; }
     .petition-body { font-size: 14px; }
@@ -75,6 +78,23 @@
     <h1>Shut Down<br><span>Big Agro</span></h1>
     <p class="subtitle">A petition to remove the meat and dairy lobby from European institutions and give back our food, our climate, our democracy, and the lives of billions of animals.</p>
     <p class="target">Addressed to the European Commission</p>
+
+    <div class="form-panel mobile-form">
+      <p class="form-title">Add your name</p>
+      <p class="form-subtitle">Every signature counts. We need to make our voice heard.</p>
+      <div class="field"><label>First name</label><input type="text" id="prenom2" placeholder="Marie" /></div>
+      <div class="field"><label>Last name</label><input type="text" id="nom2" placeholder="Dupont" /></div>
+      <div class="field"><label>Email</label><input type="email" id="email2" placeholder="marie@example.eu" /></div>
+      <div class="field"><label>Phone <span class="opt-label">(optional)</span></label><input type="tel" id="telephone2" placeholder="+33 6 12 34 56 78" /></div>
+      <div class="field"><label>City</label><input type="text" id="ville2" placeholder="Paris" /></div>
+      <label class="checkbox-field">
+        <input type="checkbox" id="newsletter2" checked />
+        <span>Keep me updated on this campaign and news concerning the meat and dairy lobby. I want to stay informed and act when it matters.</span>
+      </label>
+      <button class="btn-sign" id="btn2" onclick="signer2()">Sign the petition →</button>
+      <p class="privacy">Your data is used solely for this petition and will never be sold or shared.</p>
+      <div class="msg" id="msg2"></div>
+    </div>
 
     <div class="petition-body">
       <p>On May 10, 2026, 426 Members of the European Parliament voted to warn against plant-based food in schools, cut funding for NGOs advocating sustainable diets, and commission new "scientific studies" authored, in effect, by the very industry under scrutiny. Seventy-three percent of the Parliament. A supermajority. In service of an industry, not a people.</p>
@@ -112,7 +132,7 @@
     </div>
   </div>
 
-  <div class="form-panel">
+  <div class="form-panel desktop-form">
     <p class="form-title">Add your name</p>
     <p class="form-subtitle">Every signature counts. We need to make our voice heard.</p>
     <div class="field"><label>First name</label><input type="text" id="prenom" placeholder="Marie" /></div>
@@ -137,7 +157,7 @@
 
   async function fetchCount() {
     try {
-      const res = await fetch(SHEET_URL, { method: 'GET' });
+      const res = await fetch(SHEET_URL + '?action=count');
       const data = await res.json();
       if (data.count !== undefined) animateCount(data.count);
     } catch(e) {}
@@ -152,10 +172,9 @@
   }
 
   function animateCount(target) {
-    let current = count;
+    const from = count;
     const duration = 1200;
     const start = performance.now();
-    const from = current;
     function step(now) {
       const p = Math.min((now - start) / duration, 1);
       const ease = 1 - Math.pow(1 - p, 3);
@@ -163,6 +182,51 @@
       if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
+  }
+
+  async function submitForm(prenom, nom, email, telephone, ville, newsletter, btn, msg) {
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    try {
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom, nom, email, telephone, ville, newsletter })
+      });
+      msg.className = 'msg success';
+      msg.textContent = '✓ Thank you, ' + prenom + '. Your signature has been recorded.';
+      animateCount(count + 1);
+      const list = document.getElementById('signataire-list');
+      const pill = document.createElement('span');
+      pill.className = 'signataire-pill';
+      pill.style.borderColor = '#5a4a00';
+      pill.style.color = '#f5c800';
+      pill.textContent = prenom + ' ' + nom[0] + '. — ' + ville;
+      list.prepend(pill);
+      btn.textContent = 'Signed ✓';
+    } catch(e) {
+      msg.className = 'msg error';
+      msg.textContent = 'Something went wrong. Please try again.';
+      btn.disabled = false;
+      btn.textContent = 'Sign the petition →';
+    }
+  }
+
+  function validate(prenom, nom, email, ville, msg) {
+    msg.className = 'msg';
+    msg.style.display = 'none';
+    if (!prenom || !nom || !email || !ville) {
+      msg.className = 'msg error';
+      msg.textContent = 'Please fill in all required fields.';
+      return false;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      msg.className = 'msg error';
+      msg.textContent = 'Please enter a valid email address.';
+      return false;
+    }
+    return true;
   }
 
   async function signer() {
@@ -174,54 +238,23 @@
     const newsletter = document.getElementById('newsletter').checked;
     const msg = document.getElementById('msg');
     const btn = document.getElementById('btn');
+    if (!validate(prenom, nom, email, ville, msg)) return;
+    await submitForm(prenom, nom, email, telephone, ville, newsletter, btn, msg);
+    ['prenom','nom','email','telephone','ville'].forEach(id => document.getElementById(id).value = '');
+  }
 
-    msg.className = 'msg';
-    msg.style.display = 'none';
-
-    if (!prenom || !nom || !email || !ville) {
-      msg.className = 'msg error';
-      msg.textContent = 'Please fill in all required fields.';
-      return;
-    }
-    if (!email.includes('@') || !email.includes('.')) {
-      msg.className = 'msg error';
-      msg.textContent = 'Please enter a valid email address.';
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
-
-    try {
-      await fetch(SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom, nom, email, telephone, ville, newsletter })
-      });
-
-      msg.className = 'msg success';
-      msg.textContent = '✓ Thank you, ' + prenom + '. Your signature has been recorded.';
-
-      animateCount(count + 1);
-
-      const list = document.getElementById('signataire-list');
-      const pill = document.createElement('span');
-      pill.className = 'signataire-pill';
-      pill.style.borderColor = '#5a4a00';
-      pill.style.color = '#f5c800';
-      pill.textContent = prenom + ' ' + nom[0] + '. — ' + ville;
-      list.prepend(pill);
-
-      ['prenom','nom','email','telephone','ville'].forEach(id => document.getElementById(id).value = '');
-      btn.textContent = 'Signed ✓';
-
-    } catch(e) {
-      msg.className = 'msg error';
-      msg.textContent = 'Something went wrong. Please try again.';
-      btn.disabled = false;
-      btn.textContent = 'Sign the petition →';
-    }
+  async function signer2() {
+    const prenom = document.getElementById('prenom2').value.trim();
+    const nom = document.getElementById('nom2').value.trim();
+    const email = document.getElementById('email2').value.trim();
+    const telephone = document.getElementById('telephone2').value.trim();
+    const ville = document.getElementById('ville2').value.trim();
+    const newsletter = document.getElementById('newsletter2').checked;
+    const msg = document.getElementById('msg2');
+    const btn = document.getElementById('btn2');
+    if (!validate(prenom, nom, email, ville, msg)) return;
+    await submitForm(prenom, nom, email, telephone, ville, newsletter, btn, msg);
+    ['prenom2','nom2','email2','telephone2','ville2'].forEach(id => document.getElementById(id).value = '');
   }
 </script>
 </body>
