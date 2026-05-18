@@ -151,7 +151,7 @@
 </div>
 
 <script>
-  const SHEET_URL = "https://script.google.com/macros/s/AKfycbzTdYSzsdcUjFHYoOa8ztxe_Zfuj0PjQtB-QGTn916zD28nQXDr1F7wQQ2nGZpsQLYc/exec";
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbyBLaEMFBGoJAvF9LMiTtO4joitjQNTa2IW7TlDzzsiLhPyV5nIshcJD8lqGsOnzqVL/exec";
   const GOAL = 10000;
   let count = 0;
 
@@ -160,6 +160,16 @@
       const res = await fetch(SHEET_URL, { method: 'GET' });
       const data = await res.json();
       if (data.count !== undefined) animateCount(data.count);
+      if (data.recent && data.recent.length > 0) {
+        const list = document.getElementById('signataire-list');
+        list.innerHTML = '';
+        data.recent.forEach(function(s) {
+          const pill = document.createElement('span');
+          pill.className = 'signataire-pill';
+          pill.textContent = s.prenom + ' ' + s.nom[0] + '. — ' + s.ville;
+          list.appendChild(pill);
+        });
+      }
     } catch(e) {}
   }
   fetchCount();
