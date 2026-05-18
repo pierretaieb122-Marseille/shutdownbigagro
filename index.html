@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shut Down Big Agro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'IBM Plex Sans', sans-serif; background: #0a0a0a; color: #f0ece0; min-height: 100vh; }
+  .accent-bar { background: #f5c800; height: 6px; width: 100%; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 48px 24px; display: grid; grid-template-columns: 1fr 380px; gap: 56px; align-items: start; }
+  .petition-tag { display: inline-block; background: #f5c800; color: #0a0a0a; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px; border-radius: 2px; margin-bottom: 20px; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 8vw, 100px); line-height: 0.92; letter-spacing: 0.01em; color: #f0ece0; margin-bottom: 20px; }
+  h1 span { color: #f5c800; }
+  .subtitle { font-size: 17px; line-height: 1.6; color: #aaa; margin-bottom: 20px; border-left: 3px solid #2a2a2a; padding-left: 16px; font-style: italic; }
+  .target { font-size: 13px; color: #777; margin-bottom: 40px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .target::before { content: '→'; color: #f5c800; font-size: 15px; }
+  .petition-body { font-size: 15px; line-height: 1.85; color: #c0bcac; }
+  .petition-body p { margin-bottom: 20px; }
+  .petition-body strong { color: #f0ece0; font-weight: 500; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #f0ece0; letter-spacing: 0.05em; margin: 36px 0 14px; border-bottom: 1px solid #1e1e1e; padding-bottom: 10px; }
+  .petition-body ul { padding-left: 0; list-style: none; margin-bottom: 20px; }
+  .petition-body ul li { padding: 10px 0 10px 20px; border-bottom: 1px solid #141414; position: relative; color: #c0bcac; }
+  .petition-body ul li::before { content: '–'; position: absolute; left: 0; color: #f5c800; font-size: 14px; top: 10px; }
+  .petition-body .closing { font-size: 17px; font-weight: 500; color: #f0ece0; font-style: italic; margin-top: 32px; }
+  .counter-block { display: flex; align-items: baseline; gap: 12px; margin: 40px 0 12px; }
+  .counter-number { font-family: 'Bebas Neue', sans-serif; font-size: 60px; color: #f5c800; line-height: 1; }
+  .counter-label { font-size: 13px; color: #555; text-transform: uppercase; letter-spacing: 0.1em; }
+  .progress-bar { width: 100%; height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
+  .progress-fill { height: 100%; background: #f5c800; border-radius: 2px; transition: width 1s ease; width: 0%; }
+  .progress-goal { font-size: 12px; color: #555; }
+  .form-panel { background: #111; border: 1px solid #1e1e1e; border-radius: 4px; padding: 32px 28px; position: sticky; top: 24px; }
+  .form-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: #f0ece0; margin-bottom: 4px; letter-spacing: 0.05em; }
+  .form-subtitle { font-size: 13px; color: #555; margin-bottom: 24px; line-height: 1.5; }
+  .field { margin-bottom: 14px; }
+  label { display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #666; margin-bottom: 5px; }
+  input { width: 100%; background: #0a0a0a; border: 1px solid #222; border-radius: 3px; padding: 10px 14px; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; color: #f0ece0; outline: none; transition: border-color 0.2s; }
+  input:focus { border-color: #f5c800; }
+  input::placeholder { color: #2a2a2a; }
+  .opt-label { font-size: 10px; color: #333; margin-left: 4px; }
+  .btn-sign { width: 100%; margin-top: 10px; padding: 15px; background: #f5c800; color: #0a0a0a; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.08em; border: none; border-radius: 3px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+  .btn-sign:hover { background: #ffd620; }
+  .btn-sign:active { transform: scale(0.98); }
+  .btn-sign:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; }
+  .privacy { font-size: 11px; color: #444; text-align: center; margin-top: 10px; line-height: 1.5; }
+  .msg { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 3px; font-size: 13px; text-align: center; }
+  .msg.success { display: block; background: #1a1500; border: 1px solid #5a4a00; color: #f5c800; }
+  .msg.error { display: block; background: #2b0d0d; border: 1px solid #5c2a2a; color: #cf6679; }
+  .signataires { margin-top: 48px; }
+  .signataires-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #444; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .signataire-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .signataire-pill { background: #111; border: 1px solid #1e1e1e; padding: 5px 12px; border-radius: 2px; font-size: 12px; color: #555; }
+  @media (max-width: 768px) { .container { grid-template-columns: 1fr; } .form-panel { position: static; } }
+</style>
+</head>
+<body>
+<div class="accent-bar"></div>
+<div class="container">
+  <div class="left-col">
+    <span class="petition-tag">Petition · European Commission</span>
+    <h1>Shut Down<br><span>Big Agro</span></h1>
+    <p class="subtitle">A petition to remove the meat and dairy lobby from European institutions and give back our food, our climate, our democracy, and the lives of billions of animals.</p>
+    <p class="target">Addressed to the European Commission</p>
+
+    <div class="petition-body">
+      <p>On May 10, 2026, 426 Members of the European Parliament voted to warn against plant-based food in schools, cut funding for NGOs advocating sustainable diets, and commission new "scientific studies" authored, in effect, by the very industry under scrutiny. Seventy-three percent of the Parliament. A supermajority. In service of an industry, not a people.</p>
+      <p>This did not come from nowhere. For years, the meat and dairy lobby has worked quietly and methodically inside EU institutions, funding research, cultivating relationships, and shaping legislation to protect its market at any cost. The October 2025 vote to ban terms like "veggie burger" and "plant-based steak" from product labels was another move in the same game. Not consumer protection. Market protection.</p>
+      <p>And now they are going after children. They know that schools are where food cultures are formed. They know that a generation raised with plant-based options on their plates is a generation they cannot control. So they are acting, fast and deliberately, to ensure that doesn't happen.</p>
+
+      <div class="section-title">What is at stake is larger than a labelling law</div>
+      <p>Industrial animal agriculture is one of the leading drivers of climate breakdown, responsible for up to 18% of global greenhouse gas emissions. It is the single largest driver of biodiversity loss, clearing forests, poisoning waterways, collapsing ecosystems built over millions of years. It fuels a form of food neo-colonialism, swallowing land across the Global South to grow feed crops that sustain European consumption habits while displacing the communities who lived there.</p>
+      <p>And at the centre of it all: animals. Billions of them. Sentient beings capable of fear, pain, and attachment, confined in systems designed to extract maximum output at minimum cost. Their suffering is not incidental to this industry. <strong>It is the industry.</strong> The lobby does not just oppose plant-based food. It defends a model that depends on keeping that suffering invisible.</p>
+      <p>This is what 426 MEPs voted to protect.</p>
+
+      <div class="section-title">We demand that the European Parliament and the European Commission</div>
+      <ul>
+        <li>Immediately reverse the resolution's attack on NGOs advocating for sustainable and humane food systems</li>
+        <li>Reject any measure restricting plant-based food in school meal programs</li>
+        <li>Enforce full transparency on the funding of all studies used in legislative debates</li>
+        <li>Uphold and strengthen the dietary commitments of the Green Deal and Farm to Fork strategy</li>
+        <li>Impose strict limits on agri-food lobby access to EU institutions and decision-makers</li>
+      </ul>
+
+      <p>Europe was built on the promise of democracy, science, and shared values. The food system we leave to the next generation, and the billions of animals caught inside it, will be a measure of whether we kept that promise.</p>
+      <p class="closing">Sign. Share. Make them hear us.</p>
+    </div>
+
+    <div class="counter-block">
+      <span class="counter-number" id="count">0</span>
+      <span class="counter-label">signatures</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <p class="progress-goal">Goal: <strong style="color:#f0ece0">10,000 signatures</strong></p>
+
+    <div class="signataires">
+      <p class="signataires-title">Recent signatories</p>
+      <div class="signataire-list" id="signataire-list"></div>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <p class="form-title">Add your name</p>
+    <p class="form-subtitle">Every signature is a voice they cannot ignore.</p>
+    <div class="field"><label>First name</label><input type="text" id="prenom" placeholder="Marie" /></div>
+    <div class="field"><label>Last name</label><input type="text" id="nom" placeholder="Dupont" /></div>
+    <div class="field"><label>Email</label><input type="email" id="email" placeholder="marie@example.eu" /></div>
+    <div class="field"><label>Phone <span class="opt-label">(optional)</span></label><input type="tel" id="telephone" placeholder="+33 6 12 34 56 78" /></div>
+    <div class="field"><label>City</label><input type="text" id="ville" placeholder="Paris" /></div>
+    <button class="btn-sign" id="btn" onclick="signer()">Sign the petition →</button>
+    <p class="privacy">Your data is used solely for this petition and will never be sold or shared.</p>
+    <div class="msg" id="msg"></div>
+  </div>
+</div>
+
+<script>
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbxMq8aZUGS6XQ8E5UM2zaq3j-6Sb1G1cT7lVqrZnHH3Lp03zu2Yq4hmq3M-AKJMPZ23/exec";
+  const GOAL = 10000;
+  let count = 0;
+
+  function updateCounter(n) {
+    count = n;
+    document.getElementById('count').textContent = n.toLocaleString('en');
+    const pct = Math.min((n / GOAL) * 100, 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  function animateCount(target) {
+    let current = count;
+    const duration = 1200;
+    const start = performance.now();
+    const from = current;
+    function step(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      updateCounter(Math.round(from + ease * (target - from)));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  async function signer() {
+    const prenom = document.getElementById('prenom').value.trim();
+    const nom = document.getElementById('nom').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const telephone = document.getElementById('telephone').value.trim();
+    const ville = document.getElementById('ville').value.trim();
+    const msg = document.getElementById('msg');
+    const btn = document.getElementById('btn');
+
+    msg.className = 'msg';
+    msg.style.display = 'none';
+
+    if (!prenom || !nom || !email || !ville) {
+      msg.className = 'msg error';
+      msg.textContent = 'Please fill in all required fields.';
+      return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      msg.className = 'msg error';
+      msg.textContent = 'Please enter a valid email address.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom, nom, email, telephone, ville })
+      });
+
+      msg.className = 'msg success';
+      msg.textContent = '✓ Thank you, ' + prenom + '. Your signature has been recorded.';
+
+      animateCount(count + 1);
+
+      const list = document.getElementById('signataire-list');
+      const pill = document.createElement('span');
+      pill.className = 'signataire-pill';
+      pill.style.borderColor = '#5a4a00';
+      pill.style.color = '#f5c800';
+      pill.textContent = prenom + ' ' + nom[0] + '. — ' + ville;
+      list.prepend(pill);
+
+      ['prenom','nom','email','telephone','ville'].forEach(id => document.getElementById(id).value = '');
+      btn.textContent = 'Signed ✓';
+
+    } catch(e) {
+      msg.className = 'msg error';
+      msg.textContent = 'Something went wrong. Please try again.';
+      btn.disabled = false;
+      btn.textContent = 'Sign the petition →';
+    }
+  }
+</script>
+</body>
+</html>
