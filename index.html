@@ -39,6 +39,9 @@
   input:focus { border-color: #f5c800; }
   input::placeholder { color: #2a2a2a; }
   .opt-label { font-size: 10px; color: #333; margin-left: 4px; }
+  .checkbox-field { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; cursor: pointer; }
+  .checkbox-field input[type="checkbox"] { width: 16px; min-width: 16px; height: 16px; margin-top: 2px; accent-color: #f5c800; cursor: pointer; }
+  .checkbox-field span { font-size: 12px; color: #666; line-height: 1.5; }
   .btn-sign { width: 100%; margin-top: 10px; padding: 15px; background: #f5c800; color: #0a0a0a; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.08em; border: none; border-radius: 3px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
   .btn-sign:hover { background: #ffd620; }
   .btn-sign:active { transform: scale(0.98); }
@@ -101,12 +104,16 @@
 
   <div class="form-panel">
     <p class="form-title">Add your name</p>
-    <p class="form-subtitle">Every signature is a voice they cannot ignore.</p>
+    <p class="form-subtitle">Every signature counts. We need to make our voice heard.</p>
     <div class="field"><label>First name</label><input type="text" id="prenom" placeholder="Marie" /></div>
     <div class="field"><label>Last name</label><input type="text" id="nom" placeholder="Dupont" /></div>
     <div class="field"><label>Email</label><input type="email" id="email" placeholder="marie@example.eu" /></div>
     <div class="field"><label>Phone <span class="opt-label">(optional)</span></label><input type="tel" id="telephone" placeholder="+33 6 12 34 56 78" /></div>
     <div class="field"><label>City</label><input type="text" id="ville" placeholder="Paris" /></div>
+    <label class="checkbox-field">
+      <input type="checkbox" id="newsletter" checked />
+      <span>Keep me updated on this campaign and news concerning the meat and dairy lobby. I want to stay informed and act when it matters.</span>
+    </label>
     <button class="btn-sign" id="btn" onclick="signer()">Sign the petition →</button>
     <p class="privacy">Your data is used solely for this petition and will never be sold or shared.</p>
     <div class="msg" id="msg"></div>
@@ -145,6 +152,7 @@
     const email = document.getElementById('email').value.trim();
     const telephone = document.getElementById('telephone').value.trim();
     const ville = document.getElementById('ville').value.trim();
+    const newsletter = document.getElementById('newsletter').checked;
     const msg = document.getElementById('msg');
     const btn = document.getElementById('btn');
 
@@ -170,7 +178,7 @@
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom, nom, email, telephone, ville })
+        body: JSON.stringify({ prenom, nom, email, telephone, ville, newsletter })
       });
 
       msg.className = 'msg success';
