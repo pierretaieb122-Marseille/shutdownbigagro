@@ -151,13 +151,13 @@
 </div>
 
 <script>
-  const SHEET_URL = "https://script.google.com/macros/s/AKfycbxMq8aZUGS6XQ8E5UM2zaq3j-6Sb1G1cT7lVqrZnHH3Lp03zu2Yq4hmq3M-AKJMPZ23/exec";
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbzTdYSzsdcUjFHYoOa8ztxe_Zfuj0PjQtB-QGTn916zD28nQXDr1F7wQQ2nGZpsQLYc/exec";
   const GOAL = 10000;
   let count = 0;
 
   async function fetchCount() {
     try {
-      const res = await fetch(SHEET_URL + '?action=count');
+      const res = await fetch(SHEET_URL, { method: 'GET' });
       const data = await res.json();
       if (data.count !== undefined) animateCount(data.count);
     } catch(e) {}
